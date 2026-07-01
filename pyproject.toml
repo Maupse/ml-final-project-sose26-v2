@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project]
+name = "ml-final-project-sose26-v2"
+version = "0.1.0"
+description = "Scaffold for the machine learning final project."
+requires-python = ">=3.11"
+dependencies = [
+  "numpy",
+  "pandas",
+  "pyarrow",
+  "scikit-learn",
+  "joblib",
+  "torch",
+]
+
+[dependency-groups]
+dev = [
+  "pytest",
+  "pytest-cov",
+  "ruff",
+]
+notebooks = [
+  "jupyter",
+  "ipykernel",
+  "matplotlib",
+  "seaborn",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
