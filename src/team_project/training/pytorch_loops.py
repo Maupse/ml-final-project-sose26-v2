@@ -35,6 +35,9 @@ def train_one_epoch(
         pred = model(X)
         
         loss = loss_fn(pred, y)
+        
+        loss.backward()
+        optimizer.step()
 
         batch_size = X.size(0)
         sample_cnt += batch_size

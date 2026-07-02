@@ -5,7 +5,7 @@ import numpy as np
 import torch
 import random
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 def parse_args():
     parser = argparse.ArgumentParser()

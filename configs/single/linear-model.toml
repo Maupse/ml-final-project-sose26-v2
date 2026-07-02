@@ -1,0 +1,17 @@
+[experiment]
+name = "linear-model-city-center-v1"
+seed = "727"
+dataset = "..."
+features = ["distance_km", ""]
+target = "price"
+
+[data_split] # Has to add up to one
+train = "0."
+validation = "..."
+test = "..."
+
+[training]
+optimizer = "..."
+loss_fn = "..."
+lr = "..."
+batch_size = "..."
