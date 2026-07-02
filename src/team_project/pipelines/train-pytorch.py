@@ -5,11 +5,22 @@ from team_project.helper.parsing import (
     PROJECT_ROOT
 )
 
-from team_project.training.pytorch_loops import (
-    make_loader
+from team_project.helper.factory import (
+    choose_model,
+    choose_optimizer,
+    choose_loss_fn,
 )
 
+from team_project.training.pytorch_loops import (
+    make_loader,
+    train_once
+)
+
+
 import pandas as pd
+
+from pathlib import Path
+import json
 
 from sklearn.model_selection import train_test_split
 
@@ -21,7 +32,7 @@ def main():
     set_seed(seed) 
     
     data_path = config["experiment"]["data_path"]
-    df = pd.load_csv(PROJECT_ROOT / data_path)
+    df = pd.read_csv(PROJECT_ROOT / data_path)
     
     test_size = config["data_split"]["test"]  # 0.20
     validation_size_within_train_full = (
@@ -45,14 +56,33 @@ def main():
 
 
     batch_size = config["training"]["batch_size"]
+    epochs = config["training"]["epochs"]
+    lr = config["training"]["lr"]
     
     train_loader = make_loader(X_train, y_train, batch_size, shuffle=True)
     val_loader = make_loader(X_val, y_val, batch_size, shuffle=False)
+    
+    # Input size is number of features
+    input_dim = len(features)
+    output_dim = 1
+    model = choose_model(config["training"]["model"], input_dim, output_dim)
+    optimizer = choose_optimizer(config["training"]["optimizer"], model, lr)
+    loss_fn = choose_loss_fn(config["training"]["loss_fn"])
 
+    history = train_once(model, optimizer, loss_fn, train_loader, val_loader, epochs) 
 
 
     name = config["experiment"]["name"]
-    output_path = config["experiment"]["output_path"]
+    experiment_artifact_folder = Path(PROJECT_ROOT / "artifacts" / name)
+    experiment_artifact_folder.mkdir(parents=True, exist_ok=True)
+
+    history_path = experiment_artifact_folder / "history.json"
+    with history_path.open('w') as f:
+        json.dump(history, f, indent=2)
+
+    meta_data_path = experiment_artifact_folder / "metadata.json"
+    with meta_data_path.open('w') as f:
+        json.dump(config, f, indent=2)
 
 
 
