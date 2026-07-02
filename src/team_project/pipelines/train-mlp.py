@@ -49,6 +49,8 @@ def main():
     train_loader = make_loader(X_train, y_train, batch_size, shuffle=True)
     val_loader = make_loader(X_val, y_val, batch_size, shuffle=False)
 
+
+
     name = config["experiment"]["name"]
     output_path = config["experiment"]["output_path"]
 
