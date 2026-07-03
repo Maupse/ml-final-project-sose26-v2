@@ -7,11 +7,16 @@ src/ml_final_project_sose26_v2.egg-info/top_level.txt
 src/team_project/__init__.py
 src/team_project/data/__init__.py
 src/team_project/data/feature_construction.py
+src/team_project/data/loading.py
 src/team_project/data/preprocessing.py
 src/team_project/helper/__init__.py
+src/team_project/helper/factory.py
 src/team_project/helper/parsing.py
+src/team_project/models/mlp.py
 src/team_project/pipelines/__init__.py
-src/team_project/pipelines/train-mlp.py
+src/team_project/pipelines/build-legacy-dataset.py
+src/team_project/pipelines/full-train-test-mlp.py
+src/team_project/pipelines/train-val-mlp.py
 src/team_project/training/__init__.py
 src/team_project/training/pytorch_loops.py
 tests/test_dependency_install.py

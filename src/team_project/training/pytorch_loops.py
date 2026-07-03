@@ -6,8 +6,8 @@ import numpy as np
 
 def make_loader(X, y, batch_size: int, shuffle: bool) -> DataLoader:
     assert y.ndim == 2 and y.shape[1] == 1, 'y must be selected as df[["target"]], with shape (n_samples, 1)'
-    X_tensor = torch.from_numpy(X.to_numpy(dtype=np.float32))
-    y_tensor = torch.from_numpy(y.to_numpy(dtype=np.float32))
+    X_tensor = torch.from_numpy(X.to_numpy(dtype=np.float32).copy())
+    y_tensor = torch.from_numpy(y.to_numpy(dtype=np.float32).copy())
 
     return DataLoader(
         TensorDataset(X_tensor, y_tensor),

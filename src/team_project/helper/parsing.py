@@ -6,6 +6,7 @@ import torch
 import random
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
+RAW_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "listings.csv.gz"
 
 def parse_args():
     parser = argparse.ArgumentParser()

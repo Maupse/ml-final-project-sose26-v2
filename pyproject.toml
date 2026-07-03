@@ -20,6 +20,10 @@ dependencies = [
   "scikit-learn",
   "joblib",
   "torch",
+  "jupyter",
+  "ipykernel>=7.3.0",
+  "matplotlib",
+  "seaborn",
 ]
 
 [dependency-groups]
@@ -27,12 +31,6 @@ dev = [
   "pytest",
   "pytest-cov",
   "ruff",
-]
-notebooks = [
-  "jupyter",
-  "ipykernel",
-  "matplotlib",
-  "seaborn",
 ]
 
 [tool.pytest.ini_options]

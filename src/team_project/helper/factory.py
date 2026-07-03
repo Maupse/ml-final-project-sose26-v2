@@ -15,7 +15,7 @@ def choose_model(model_config, input_dim, output_dim):
 def choose_optimizer(optimizer_config, model, lr):
     match optimizer_config:
         case "adam":
-            return torch.optim.Adam(model.paramteres(), lr=lr)
+            return torch.optim.Adam(model.parameters(), lr=lr)
         case _:
             raise ValueError("Unknown optimizer in the config: ", optimizer_config)
 

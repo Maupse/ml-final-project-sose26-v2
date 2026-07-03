@@ -16,6 +16,12 @@ from team_project.training.pytorch_loops import (
     train_once
 )
 
+from team_project.data.preprocessing import (
+    sanity_check,
+    fit_transform,
+    transform
+)
+
 
 import pandas as pd
 
@@ -23,6 +29,10 @@ from pathlib import Path
 import json
 
 from sklearn.model_selection import train_test_split
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import MinMaxScaler
+
 
 def main():
     args = parse_args()
@@ -31,7 +41,7 @@ def main():
     seed = config["experiment"]["seed"]
     set_seed(seed) 
     
-    data_path = config["experiment"]["data_path"]
+    data_path = config["experiment"]["dataset"]
     df = pd.read_csv(PROJECT_ROOT / data_path)
     
     test_size = config["data_split"]["test"]  # 0.20
@@ -43,17 +53,34 @@ def main():
         )
     )  # 0.10 / 0.80 = 0.125
 
-    features = config["training"]["features"]
-    target = config["training"]["target"]
+    features = config["experiment"]["features"]
+    target = config["experiment"]["target"]
 
     X = df[features]
     y = df[[target]]
-
+    
     X_train_full, X_test, y_train_full, y_test = \
         train_test_split(X, y, test_size=test_size, random_state=seed)
     X_train, X_val, y_train, y_val = \
         train_test_split(X_train_full, y_train_full, test_size=validation_size_within_train_full, random_state=seed)
 
+    # 1. Run preprocessing
+    imputer = config["preprocessing"]["imputer"]
+    fill_value = config["preprocessing"]["fill_value"] # only used if imputer is "constant"
+
+    preprocessor = Pipeline([
+        ("imputer", SimpleImputer(strategy=imputer, fill_value=fill_value)),
+        ("scaler", MinMaxScaler()),        
+    ])
+    
+    X_train = fit_transform(preprocessor, X_train)
+    X_val = transform(preprocessor, X_val)
+    X_test = transform(preprocessor, X_test)
+    
+    # 2. Run sanity check
+    sanity_check("train", X_train, y_train)
+    sanity_check("val", X_val, y_val)
+    sanity_check("test", X_test, y_test)
 
     batch_size = config["training"]["batch_size"]
     epochs = config["training"]["epochs"]
@@ -73,7 +100,7 @@ def main():
 
 
     name = config["experiment"]["name"]
-    experiment_artifact_folder = Path(PROJECT_ROOT / "artifacts" / name)
+    experiment_artifact_folder = Path(PROJECT_ROOT / "artifacts" / "single" / name / "single_validation_set")
     experiment_artifact_folder.mkdir(parents=True, exist_ok=True)
 
     history_path = experiment_artifact_folder / "history.json"

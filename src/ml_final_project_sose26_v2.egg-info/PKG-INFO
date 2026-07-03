@@ -9,3 +9,7 @@ Requires-Dist: pyarrow
 Requires-Dist: scikit-learn
 Requires-Dist: joblib
 Requires-Dist: torch
+Requires-Dist: jupyter
+Requires-Dist: ipykernel>=7.3.0
+Requires-Dist: matplotlib
+Requires-Dist: seaborn
