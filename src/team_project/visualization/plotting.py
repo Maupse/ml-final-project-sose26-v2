@@ -10,6 +10,9 @@ def plot_hyperparameter_runs(
     lower_quantile: float = 0.01,
     upper_quantile: float = 0.99,
 ) -> None:
+    """
+    Generated using GPT5.5 High
+    """
     rows: list[dict] = []
 
     if not 0 <= lower_quantile < upper_quantile <= 1:
