@@ -11,17 +11,30 @@ def load_raw_listings(path: Path) -> pd.DataFrame:
 
     return pd.read_csv(path, compression="gzip")
 
-def load_single_run_history(experiment_name) -> dict[str, list[float]]:
-    path = PROJECT_ROOT / "artifacts/single" / experiment_name / "single_validation_set" / "history.json"
-    with open(path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+def load_data(path) -> dict[str, dict[str, list[float]]]:
+    hist = path / "history.json"
+    meta = path / "metadata.json"
+    data = {}
 
-    assert isinstance(data, dict), "Expected a dictionary"
-    assert all(
-        isinstance(key, str)
-        and isinstance(value, list)
-        and all(isinstance(item, float) for item in value)
-        for key, value in data.items()
-    ), "Expected dict[str, list[float]]"
+    with open(hist, "r", encoding="utf-8") as f:
+        data["history"] = json.load(f)
+    with open(meta, "r", encoding="utf-8") as f:
+        data["metadata"] = json.load(f)
 
     return data
+
+def load_data_single_run(experiment_name) -> dict[str, dict[str, list[float]]]:
+    path = Path(PROJECT_ROOT / "artifacts/single" / experiment_name / "single_validation_set")
+
+    data = load_data(path)
+
+    return data
+
+def load_data_multi_run(experiment_name) -> list[dict[str, dict[str, list[float]]]]:
+    parent = Path(PROJECT_ROOT / "artifacts" / "multiple" / experiment_name / "single_validation_set")
+    l = []
+    for child in parent.iterdir():
+        if child.is_dir():
+            l.append(load_data(child))
+
+    return l

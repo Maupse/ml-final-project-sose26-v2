@@ -33,6 +33,8 @@ from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler
 
+from itertools import product
+
 
 def main():
     args = parse_args()
@@ -82,34 +84,52 @@ def main():
     sanity_check("val", X_val, y_val)
     sanity_check("test", X_test, y_test)
 
-    batch_size = config["training"]["batch_size"]
-    epochs = config["training"]["epochs"]
-    lr = config["training"]["lr"]
-    
-    train_loader = make_loader(X_train, y_train, batch_size, shuffle=True)
-    val_loader = make_loader(X_val, y_val, batch_size, shuffle=False)
-    
     # Input size is number of features
     input_dim = len(features)
     output_dim = 1
-    model = choose_model(config["training"]["model"], input_dim, output_dim)
-    optimizer = choose_optimizer(config["training"]["optimizer"], model, lr)
-    loss_fn = choose_loss_fn(config["training"]["loss_fn"])
-
-    history = train_once(model, optimizer, loss_fn, train_loader, val_loader, epochs, "run-once") 
 
 
     name = config["experiment"]["name"]
-    experiment_artifact_folder = Path(PROJECT_ROOT / "artifacts" / "single" / name / "single_validation_set")
-    experiment_artifact_folder.mkdir(parents=True, exist_ok=True)
+    experiment_artifact_folder = Path(PROJECT_ROOT / "artifacts" / "multiple" / name / "single_validation_set")
+    
+    run_id = 1
+    for batch_size, epochs, lr, model_type, optimizer_type, loss_fn_type in product(
+        config["training"]["batch_size"],
+        config["training"]["epochs"],
+        config["training"]["lr"],
+        config["training"]["model"],
+        config["training"]["optimizer"],
+        config["training"]["loss_fn"]
+    ):
+        model = choose_model(model_type, input_dim, output_dim)
+        optimizer = choose_optimizer(optimizer_type, model, lr)
+        loss_fn = choose_loss_fn(loss_fn_type)
+        
+        train_loader = make_loader(X_train, y_train, batch_size, shuffle=True)
+        val_loader = make_loader(X_val, y_val, batch_size, shuffle=False)
+        
+        history = train_once(model, optimizer, loss_fn, train_loader, val_loader, epochs, f"run_{run_id}") 
 
-    history_path = experiment_artifact_folder / "history.json"
-    with history_path.open('w') as f:
-        json.dump(history, f, indent=2)
+        run_artifact_folder = experiment_artifact_folder / f"run_{run_id:03d}"
+        run_artifact_folder.mkdir(parents=True, exist_ok=True)
 
-    meta_data_path = experiment_artifact_folder / "metadata.json"
-    with meta_data_path.open('w') as f:
-        json.dump(config, f, indent=2)
+
+        history_path = run_artifact_folder / "history.json"
+        with history_path.open('w') as f:
+            json.dump(history, f, indent=2)
+
+        meta_data_path = run_artifact_folder / "metadata.json"
+        with meta_data_path.open('w') as f:
+            run_config = config.copy()
+            run_config["training"]["batch_size"] = batch_size,
+            run_config["training"]["epochs"] = epochs,
+            run_config["training"]["lr"] = lr,
+            run_config["training"]["model"] = model_type,
+            run_config["training"]["optimizer"] = optimizer_type,
+            run_config["training"]["loss_fn"] = loss_fn_type
+            json.dump(run_config, f, indent=2)
+        
+        run_id += 1
 
 
 

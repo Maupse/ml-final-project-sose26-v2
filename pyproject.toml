@@ -24,6 +24,7 @@ dependencies = [
   "ipykernel>=7.3.0",
   "matplotlib",
   "seaborn",
+  "tqdm>=4.68.3",
 ]
 
 [dependency-groups]

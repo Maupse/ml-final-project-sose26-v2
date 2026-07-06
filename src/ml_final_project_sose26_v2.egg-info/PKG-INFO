@@ -13,3 +13,4 @@ Requires-Dist: jupyter
 Requires-Dist: ipykernel>=7.3.0
 Requires-Dist: matplotlib
 Requires-Dist: seaborn
+Requires-Dist: tqdm>=4.68.3
