@@ -32,7 +32,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler
-
+from team_project.evalutation.metrics import get_metrics
 
 def main():
     args = parse_args()
@@ -75,12 +75,10 @@ def main():
     
     X_train = fit_transform(preprocessor, X_train)
     X_val = transform(preprocessor, X_val)
-    X_test = transform(preprocessor, X_test)
     
     # 2. Run sanity check
     sanity_check("train", X_train, y_train)
     sanity_check("val", X_val, y_val)
-    sanity_check("test", X_test, y_test)
 
     batch_size = config["training"]["batch_size"]
     epochs = config["training"]["epochs"]
@@ -110,6 +108,15 @@ def main():
     meta_data_path = experiment_artifact_folder / "metadata.json"
     with meta_data_path.open('w') as f:
         json.dump(config, f, indent=2)
+        
+    
+    metrics_path = experiment_artifact_folder / "metrics.json"
+    y_pred = model(X_val)
+    
+    metrics = get_metrics(y_val, y_pred)
+
+    with metrics_path.open('w') as f:
+        json.dump(metrics, f, indent=2)
 
 
 

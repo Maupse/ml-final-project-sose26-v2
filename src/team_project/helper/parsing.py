@@ -18,6 +18,21 @@ def parse_args():
     )
     return parser.parse_args()
 
+def parse_args_baseline():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--config",
+        type=Path,
+        required=True,
+        help="Path to the TOML config file",
+    )
+    parser.add_argument(
+        "--set",
+        type=str,
+        required=True,
+        help="Specify if you want a baseline for the validation or test set via 'val' or 'test'!"
+    )
+    return parser.parse_args()
 
 def load_config(path: Path):
     with path.open("rb") as file:

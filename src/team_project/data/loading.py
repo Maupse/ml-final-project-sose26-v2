@@ -23,6 +23,27 @@ def load_data(path) -> dict[str, dict[str, list[float]]]:
 
     return data
 
+def load_mean_baseline(experiment_name, set):
+    path = Path(PROJECT_ROOT / "artifacts" / "single" / experiment_name / "single_validation_set" / "baselines")
+    file_name = f"mean_{set}_metrics.json"
+    file_path = path / file_name
+    if not file_path.is_file():
+        raise FileNotFoundError("The artifact might have not been created yet")
+    with open(file_path, 'r', encoding="utf-8") as f:
+        metrics = json.load(f)
+    return metrics
+
+def load_linear_baseline(experiment_name, set):
+    path = Path(PROJECT_ROOT / "artifacts" / "single" / experiment_name / "single_validation_set" / "baselines")
+    file_name = f"linear_{set}_metrics.json"
+    file_path = path / file_name
+    if not file_path.is_file():
+        raise FileNotFoundError("The artifact might have not been created yet")
+    with open(file_path, 'r', encoding="utf-8") as f:
+        metrics = json.load(f)
+    return metrics
+
+
 def load_data_single_run(experiment_name) -> dict[str, dict[str, list[float]]]:
     path = Path(PROJECT_ROOT / "artifacts/single" / experiment_name / "single_validation_set")
 

@@ -77,12 +77,10 @@ def main():
     
     X_train = fit_transform(preprocessor, X_train)
     X_val = transform(preprocessor, X_val)
-    X_test = transform(preprocessor, X_test)
     
     # 2. Run sanity check
     sanity_check("train", X_train, y_train)
     sanity_check("val", X_val, y_val)
-    sanity_check("test", X_test, y_test)
 
     # Input size is number of features
     input_dim = len(features)
