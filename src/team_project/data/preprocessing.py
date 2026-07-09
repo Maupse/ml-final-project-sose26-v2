@@ -77,3 +77,54 @@ def transform(preprocessor, X: pd.DataFrame):
         columns=X.columns,
         index=X.index 
     )
+    
+
+PROPERTY_TYPE_KEYWORDS = {
+    "serviced_apartment": [
+        "serviced apartment",
+    ],
+    "hotel_like": [
+        "hotel",
+        "aparthotel",
+        "hostel",
+        "pension",
+        "bed and breakfast",
+    ],
+    "apartment_like": [
+        "rental unit",
+        "condo",
+        "loft",
+    ],
+    "house_like": [
+        "home",
+        "townhouse",
+        "villa",
+        "guesthouse",
+        "guest suite",
+        "bungalow",
+        "chalet",
+        "cabin",
+        "farm stay",
+        "casa particular",
+    ],
+    "unusual_stay": [
+        "camper",
+        "rv",
+        "tent",
+        "tiny home",
+        "hut",
+        "windmill",
+    ],
+}
+
+def simplify_property_type(value):
+    if pd.isna(value):
+        return "unknown"
+
+    value = str(value).lower().strip()
+
+    for category, keywords in PROPERTY_TYPE_KEYWORDS.items():
+        if any(keyword in value for keyword in keywords):
+            return category
+
+    return "other"
