@@ -29,6 +29,7 @@ import numpy as np
 
 from pathlib import Path
 import json
+import copy
 
 from sklearn.model_selection import train_test_split, KFold
 from team_project.evalutation.metrics import get_metrics
@@ -119,7 +120,9 @@ def main():
 
     meta_data_path = experiment_artifact_folder / "metadata.json"
     with meta_data_path.open('w') as f:
-        json.dump(config, f, indent=2)
+        run_config = copy.deepcopy(config)
+        run_config["data_split"]["k"] = k
+        json.dump(run_config, f, indent=2)
 
 
 if __name__ == "__main__":

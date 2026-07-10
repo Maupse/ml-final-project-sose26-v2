@@ -135,6 +135,7 @@ def main():
         meta_data_path = run_artifact_folder / "metadata.json"
         with meta_data_path.open('w') as f:
             run_config = copy.deepcopy(config)
+            run_config["data_split"]["k"] = k
             run_config["training"]["batch_size"] = batch_size
             run_config["training"]["epochs"] = epochs
             run_config["training"]["lr"] = lr
