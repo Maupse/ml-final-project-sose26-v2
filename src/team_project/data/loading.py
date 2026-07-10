@@ -44,6 +44,26 @@ def load_linear_baseline(experiment_name, set):
     return metrics
 
 
+def load_cross_validation_mean_baseline(experiment_name):
+    path = Path(PROJECT_ROOT / "artifacts" / "single" / experiment_name / "cross_validation" / "baselines")
+    file_path = path / "mean_metrics.json"
+    if not file_path.is_file():
+        raise FileNotFoundError("The artifact might have not been created yet")
+    with open(file_path, 'r', encoding="utf-8") as f:
+        metrics = json.load(f)
+    return metrics
+
+
+def load_cross_validation_linear_baseline(experiment_name):
+    path = Path(PROJECT_ROOT / "artifacts" / "single" / experiment_name / "cross_validation" / "baselines")
+    file_path = path / "linear_metrics.json"
+    if not file_path.is_file():
+        raise FileNotFoundError("The artifact might have not been created yet")
+    with open(file_path, 'r', encoding="utf-8") as f:
+        metrics = json.load(f)
+    return metrics
+
+
 def load_data_single_run(experiment_name) -> dict[str, dict[str, list[float]]]:
     path = Path(PROJECT_ROOT / "artifacts/single" / experiment_name / "single_validation_set")
 
@@ -51,10 +71,29 @@ def load_data_single_run(experiment_name) -> dict[str, dict[str, list[float]]]:
 
     return data
 
+
+def load_data_single_run_cross_validation(experiment_name) -> dict[str, dict[str, list[float]]]:
+    path = Path(PROJECT_ROOT / "artifacts" / "single" / experiment_name / "cross_validation")
+
+    data = load_data(path)
+
+    return data
+
+
 def load_data_multi_run(experiment_name) -> list[dict[str, dict[str, list[float]]]]:
     parent = Path(PROJECT_ROOT / "artifacts" / "multiple" / experiment_name / "single_validation_set")
     l = []
-    for child in parent.iterdir():
+    for child in sorted(parent.iterdir()):
+        if child.is_dir():
+            l.append(load_data(child))
+
+    return l
+
+
+def load_data_multi_run_cross_validation(experiment_name) -> list[dict[str, dict[str, list[float]]]]:
+    parent = Path(PROJECT_ROOT / "artifacts" / "multiple" / experiment_name / "cross_validation")
+    l = []
+    for child in sorted(parent.iterdir()):
         if child.is_dir():
             l.append(load_data(child))
 
