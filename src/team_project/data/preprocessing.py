@@ -58,6 +58,7 @@ def clean_price(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
+
 def sanity_check(name: str, X, y):
     missing = pd.concat([X, y], axis=1).isna().sum(axis=0)
     missing = missing[missing > 0]
@@ -128,3 +129,14 @@ def simplify_property_type(value):
             return category
 
     return "other"
+
+def get_preprocessor(config):
+    imputer = config["preprocessing"]["imputer"]
+    fill_value = config["preprocessing"]["fill_value"] # only used if imputer is "constant"
+
+    preprocessor = Pipeline([
+        ("imputer", SimpleImputer(strategy=imputer, fill_value=fill_value)),
+        ("scaler", MinMaxScaler()),        
+    ])
+    
+    return preprocessor

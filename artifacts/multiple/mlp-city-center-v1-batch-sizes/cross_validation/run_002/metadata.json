@@ -1,0 +1,30 @@
+{
+  "experiment": {
+    "name": "mlp-city-center-v1-batch-sizes",
+    "seed": 727,
+    "dataset": "data/processed/legacy.csv",
+    "features": [
+      "distance_km",
+      "review_scores_rating",
+      "number_of_reviews"
+    ],
+    "target": "price"
+  },
+  "data_split": {
+    "train": 0.7,
+    "validation": 0.1,
+    "test": 0.2
+  },
+  "preprocessing": {
+    "imputer": "constant",
+    "fill_value": 0
+  },
+  "training": {
+    "model": "mlp",
+    "optimizer": "adam",
+    "loss_fn": "mse",
+    "epochs": 25,
+    "lr": 0.01,
+    "batch_size": 64
+  }
+}
