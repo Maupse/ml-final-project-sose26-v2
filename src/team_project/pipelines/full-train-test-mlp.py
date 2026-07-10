@@ -26,6 +26,7 @@ from team_project.data.preprocessing import (
 
 import pandas as pd
 import numpy as np
+import torch
 
 from pathlib import Path
 import json
@@ -82,7 +83,10 @@ def main():
     # Train model
     history = train_once(model, optimizer, loss_fn, train_loader, val_loader, epochs, "run-once") 
     
-    pred = model(y_test)
+    model.eval()
+    X_test_tensor = torch.from_numpy(X_test.to_numpy(dtype=np.float32).copy())
+    with torch.no_grad():
+        pred = model(X_test_tensor).numpy()
     metrics = get_metrics(y_test, pred)
 
 

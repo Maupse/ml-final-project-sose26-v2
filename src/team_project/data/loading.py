@@ -64,6 +64,35 @@ def load_cross_validation_linear_baseline(experiment_name):
     return metrics
 
 
+def load_final_metrics(experiment_name):
+    file_path = Path(PROJECT_ROOT / "artifacts" / "single" / experiment_name / "final" / "metrics.json")
+    if not file_path.is_file():
+        raise FileNotFoundError("The artifact might have not been created yet")
+    with open(file_path, 'r', encoding="utf-8") as f:
+        metrics = json.load(f)
+    return metrics
+
+
+def load_final_mean_baseline(experiment_name):
+    path = Path(PROJECT_ROOT / "artifacts" / "single" / experiment_name / "final" / "baselines")
+    file_path = path / "mean_metrics.json"
+    if not file_path.is_file():
+        raise FileNotFoundError("The artifact might have not been created yet")
+    with open(file_path, 'r', encoding="utf-8") as f:
+        metrics = json.load(f)
+    return metrics
+
+
+def load_final_linear_baseline(experiment_name):
+    path = Path(PROJECT_ROOT / "artifacts" / "single" / experiment_name / "final" / "baselines")
+    file_path = path / "linear_metrics.json"
+    if not file_path.is_file():
+        raise FileNotFoundError("The artifact might have not been created yet")
+    with open(file_path, 'r', encoding="utf-8") as f:
+        metrics = json.load(f)
+    return metrics
+
+
 def load_data_single_run(experiment_name) -> dict[str, dict[str, list[float]]]:
     path = Path(PROJECT_ROOT / "artifacts/single" / experiment_name / "single_validation_set")
 
