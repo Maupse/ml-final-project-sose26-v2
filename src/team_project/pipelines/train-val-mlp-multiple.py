@@ -19,7 +19,8 @@ from team_project.training.pytorch_loops import (
 from team_project.data.preprocessing import (
     sanity_check,
     fit_transform,
-    transform
+    transform,
+    get_preprocessor
 )
 
 
@@ -29,10 +30,6 @@ from pathlib import Path
 import json
 
 from sklearn.model_selection import train_test_split
-from sklearn.impute import SimpleImputer
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import MinMaxScaler
-
 from itertools import product
 
 
@@ -67,14 +64,7 @@ def main():
         train_test_split(X_train_full, y_train_full, test_size=validation_size_within_train_full, random_state=seed)
 
     # 1. Run preprocessing
-    imputer = config["preprocessing"]["imputer"]
-    fill_value = config["preprocessing"]["fill_value"] # only used if imputer is "constant"
-
-    preprocessor = Pipeline([
-        ("imputer", SimpleImputer(strategy=imputer, fill_value=fill_value)),
-        ("scaler", MinMaxScaler()),        
-    ])
-    
+    preprocessor = get_preprocessor(config)
     X_train = fit_transform(preprocessor, X_train)
     X_val = transform(preprocessor, X_val)
     
@@ -82,8 +72,8 @@ def main():
     sanity_check("train", X_train, y_train)
     sanity_check("val", X_val, y_val)
 
-    # Input size is number of features
-    input_dim = len(features)
+    # Input size is number of transformed features
+    input_dim = X_train.shape[1]
     output_dim = 1
 
 

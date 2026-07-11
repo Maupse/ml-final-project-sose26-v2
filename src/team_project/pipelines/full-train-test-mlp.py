@@ -48,7 +48,6 @@ def main():
 
     features = config["experiment"]["features"]
     target = config["experiment"]["target"]
-    input_dim = len(features)
     output_dim = 1
 
     batch_size = config["training"]["batch_size"]
@@ -66,6 +65,7 @@ def main():
     # 1. Fit preprocessor
     X_train_full = fit_transform(preprocessor, X_train_full)
     X_test = transform(preprocessor, X_test)
+    input_dim = X_train_full.shape[1]
     
     # 2. Run sanity check
     sanity_check("train", X_train_full, y_train_full)

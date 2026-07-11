@@ -11,6 +11,7 @@ validation = 0.1
 test = 0.2
 
 [preprocessing]
+version = "v1"
 imputer = "constant"
 fill_value = 0
 

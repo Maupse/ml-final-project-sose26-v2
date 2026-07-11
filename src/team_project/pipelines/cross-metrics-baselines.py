@@ -32,8 +32,6 @@ def main():
 
     features = config["experiment"]["features"]
     target = config["experiment"]["target"]
-    input_dim = len(features)
-    output_dim = 1
 
     batch_size = config["training"]["batch_size"]
     epochs = config["training"]["epochs"]

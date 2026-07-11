@@ -8,7 +8,8 @@ from team_project.helper.parsing import (
 from team_project.data.preprocessing import (
     sanity_check,
     fit_transform,
-    transform
+    transform,
+    get_preprocessor
 )
 
 from team_project.evalutation.metrics import get_metrics
@@ -18,10 +19,6 @@ import pandas as pd
 
 from pathlib import Path
 import json
-
-from sklearn.impute import SimpleImputer
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import MinMaxScaler
 
 from sklearn.linear_model import LinearRegression
 
@@ -48,15 +45,7 @@ def main():
     X_train, X_eval, y_train, y_eval = choose_eval_set(X, y, eval_set, config)
 
     # 1. Run preprocessing
-    imputer = config["preprocessing"]["imputer"]
-    fill_value = config["preprocessing"]["fill_value"] # only used if imputer is "constant"
-
-    preprocessor = Pipeline([
-        ("imputer", SimpleImputer(strategy=imputer, fill_value=fill_value)),
-        ("scaler", MinMaxScaler()),        
-    ])
-
-    
+    preprocessor = get_preprocessor(config)
     X_train = fit_transform(preprocessor, X_train)
     X_eval = transform(preprocessor, X_eval)
 
