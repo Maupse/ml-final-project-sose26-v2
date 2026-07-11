@@ -1,0 +1,54 @@
+{
+  "experiment": {
+    "name": "mlp-v2-learning-rates",
+    "seed": 727,
+    "dataset": "data/processed/structural-v1.csv",
+    "features": [
+      "latitude",
+      "longitude",
+      "distance_to_city_center_km",
+      "neighbourhood_cleansed",
+      "property_type_clean",
+      "room_type",
+      "accommodates",
+      "bedrooms",
+      "bedrooms_missing",
+      "beds",
+      "beds_missing",
+      "bathroom_count",
+      "bathroom_privacy",
+      "bathroom_information_missing",
+      "has_license",
+      "amenity_count",
+      "has_wifi",
+      "has_kitchen",
+      "has_parking",
+      "has_washer",
+      "has_air_conditioning",
+      "has_workspace",
+      "has_balcony",
+      "has_dryer",
+      "has_elevator",
+      "has_smoke_alarm",
+      "allows_pets"
+    ],
+    "target": "log1_price"
+  },
+  "data_split": {
+    "train": 0.7,
+    "validation": 0.1,
+    "test": 0.2,
+    "k": 5
+  },
+  "preprocessing": {
+    "version": "v2"
+  },
+  "training": {
+    "model": "mlp",
+    "optimizer": "adam",
+    "loss_fn": "mse",
+    "epochs": 25,
+    "lr": 0.0001,
+    "batch_size": 64
+  }
+}
