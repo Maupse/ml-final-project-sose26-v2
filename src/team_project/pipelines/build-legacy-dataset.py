@@ -17,7 +17,7 @@ def build_legacy_dataset(
     """Build and save the deterministic processed listings dataset."""
     listings = load_raw_listings(raw_data_path)
     cleaned = legacy_clean_raw_listings(listings)
-    cleaned = add_distance_to_city_center(cleaned)
+    cleaned = add_distance_to_city_center(cleaned, "distance_km")
 
     processed_data_path.parent.mkdir(parents=True, exist_ok=True)
     cleaned.to_csv(processed_data_path, index=False)

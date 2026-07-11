@@ -2,10 +2,12 @@
 
 from typing import Any
 
+import numpy as np
 import pandas as pd
+from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
 LEGACY_RELEVANT_COLUMNS = [
     "id",
@@ -64,18 +66,34 @@ def sanity_check(name: str, X, y):
     missing = missing[missing > 0]
     if not missing.empty:
         raise ValueError(f"{name} contains missing values: \n {missing}")
+
     
+def feature_summary(data, columns):
+    """Return modelling-oriented type, missingness, and cardinality checks."""
+    return pd.DataFrame({
+        "dtype": data[columns].dtypes.astype(str),
+        "missing_count": data[columns].isna().sum(),
+        "missing_percent": data[columns].isna().mean().mul(100).round(2),
+        "unique_values": data[columns].nunique(dropna=True),
+    })
+
+def _get_feature_names(preprocessor, columns):
+    if hasattr(preprocessor, "get_feature_names_out"):
+        return preprocessor.get_feature_names_out()
+    return columns
+
+
 def fit_transform(preprocessor, X: pd.DataFrame):
     return pd.DataFrame(
         preprocessor.fit_transform(X),
-        columns=X.columns,
+        columns=_get_feature_names(preprocessor, X.columns),
         index=X.index 
     )
     
 def transform(preprocessor, X: pd.DataFrame):
     return pd.DataFrame(
         preprocessor.transform(X),
-        columns=X.columns,
+        columns=_get_feature_names(preprocessor, X.columns),
         index=X.index 
     )
     
@@ -130,7 +148,7 @@ def simplify_property_type(value):
 
     return "other"
 
-def get_preprocessor(config):
+def get_preprocessor_v1(config):
     imputer = config["preprocessing"]["imputer"]
     fill_value = config["preprocessing"]["fill_value"] # only used if imputer is "constant"
 
@@ -140,3 +158,76 @@ def get_preprocessor(config):
     ])
     
     return preprocessor
+
+
+V2_CATEGORICAL_FEATURES = [
+    "neighbourhood_cleansed",
+    "property_type_clean",
+    "room_type",
+    "bathroom_privacy",
+]
+
+V2_NUMERIC_FEATURES = [
+    "latitude",
+    "longitude",
+    "distance_to_city_center_km",
+    "accommodates",
+    "bedrooms",
+    "bedrooms_missing",
+    "beds",
+    "beds_missing",
+    "bathroom_count",
+    "bathroom_information_missing",
+    "has_license",
+    "amenity_count",
+    "has_wifi",
+    "has_kitchen",
+    "has_parking",
+    "has_washer",
+    "has_air_conditioning",
+    "has_workspace",
+    "has_balcony",
+    "has_dryer",
+    "has_elevator",
+    "has_smoke_alarm",
+    "allows_pets",
+]
+
+
+def get_preprocessor_v2(config):
+    features = config["experiment"]["features"]
+    numeric_features = [feature for feature in V2_NUMERIC_FEATURES if feature in features]
+    categorical_features = [feature for feature in V2_CATEGORICAL_FEATURES if feature in features]
+    known_features = set(V2_NUMERIC_FEATURES) | set(V2_CATEGORICAL_FEATURES)
+    unknown_features = sorted(set(features) - known_features)
+    if unknown_features:
+        raise ValueError(f"Unknown v2 features: {unknown_features}")
+
+    numeric_preprocessor = Pipeline([
+        ("imputer", SimpleImputer(strategy="median")),
+        ("scaler", MinMaxScaler()),
+    ])
+    categorical_preprocessor = Pipeline([
+        ("imputer", SimpleImputer(strategy="constant", fill_value="missing")),
+        ("onehot", OneHotEncoder(handle_unknown="ignore", sparse_output=False, dtype=np.float32)),
+    ])
+
+    return ColumnTransformer(
+        transformers=[
+            ("numeric", numeric_preprocessor, numeric_features),
+            ("categorical", categorical_preprocessor, categorical_features),
+        ],
+        remainder="drop",
+        verbose_feature_names_out=False,
+    )
+
+
+def get_preprocessor(config):
+    version = config.get("preprocessing", {}).get("version", "v1")
+
+    if version == "v1":
+        return get_preprocessor_v1(config)
+    if version == "v2":
+        return get_preprocessor_v2(config)
+
+    raise ValueError(f"Unknown preprocessing version: {version}")
