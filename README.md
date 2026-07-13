@@ -124,7 +124,7 @@ plt.show()
 
 ## TODO
 
-- [x] Make train single config work for mlp (Fr, 3. July)
+- [x] Make train single config work for mlp
 - [x] Add tqdm logging to training loops
 - [x] Add train multiple configs and artifacts to be able to test many hyperparameters
 - [x] Add linear and mean baseline comparison
