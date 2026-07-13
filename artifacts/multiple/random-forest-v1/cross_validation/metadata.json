@@ -1,0 +1,85 @@
+{
+  "experiment": {
+    "name": "random-forest-v1",
+    "seed": 727,
+    "dataset": "data/processed/structural-v1.csv",
+    "features": [
+      "latitude",
+      "longitude",
+      "distance_to_city_center_km",
+      "neighbourhood_cleansed",
+      "property_type_clean",
+      "room_type",
+      "accommodates",
+      "bedrooms",
+      "bedrooms_missing",
+      "beds",
+      "beds_missing",
+      "bathroom_count",
+      "bathroom_privacy",
+      "bathroom_information_missing",
+      "has_license",
+      "amenity_count",
+      "has_wifi",
+      "has_kitchen",
+      "has_parking",
+      "has_washer",
+      "has_air_conditioning",
+      "has_workspace",
+      "has_balcony",
+      "has_dryer",
+      "has_elevator",
+      "has_smoke_alarm",
+      "allows_pets"
+    ],
+    "target": "log1_price"
+  },
+  "data_split": {
+    "train": 0.7,
+    "validation": 0.1,
+    "test": 0.2,
+    "k": 5
+  },
+  "preprocessing": {
+    "version": "v2"
+  },
+  "training": {
+    "model": "random-forest",
+    "n_estimators": [
+      200,
+      500
+    ],
+    "max_depth": [
+      -1,
+      10,
+      20,
+      40
+    ],
+    "min_samples_leaf": [
+      1,
+      2,
+      5,
+      10
+    ],
+    "max_features": [
+      "sqrt",
+      0.5,
+      1.0
+    ],
+    "bootstrap": [
+      true
+    ]
+  },
+  "search": {
+    "n_iter": 30,
+    "n_jobs": -1,
+    "best_score": -0.5168909557289163,
+    "best_params": {
+      "n_estimators": 500,
+      "min_samples_leaf": 1,
+      "max_features": 0.5,
+      "max_depth": 20,
+      "bootstrap": true
+    }
+  }
+}

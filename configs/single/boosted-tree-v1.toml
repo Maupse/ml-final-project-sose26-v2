@@ -1,0 +1,51 @@
+[experiment]
+name = "boosted-tree-v1"
+seed = 727
+dataset = "data/processed/structural-v1.csv"
+features = [
+  "latitude",
+  "longitude",
+  "distance_to_city_center_km",
+  "neighbourhood_cleansed",
+  "property_type_clean",
+  "room_type",
+  "accommodates",
+  "bedrooms",
+  "bedrooms_missing",
+  "beds",
+  "beds_missing",
+  "bathroom_count",
+  "bathroom_privacy",
+  "bathroom_information_missing",
+  "has_license",
+  "amenity_count",
+  "has_wifi",
+  "has_kitchen",
+  "has_parking",
+  "has_washer",
+  "has_air_conditioning",
+  "has_workspace",
+  "has_balcony",
+  "has_dryer",
+  "has_elevator",
+  "has_smoke_alarm",
+  "allows_pets",
+]
+target = "log1_price"
+
+[data_split] # Has to add up to one
+train = 0.8
+test = 0.2
+k = 5
+
+[preprocessing]
+version = "v2"
+
+[training]
+model="boosted-tree"
+n_estimators = 400    # number of sequential trees
+learning_rate=0.05    # contribution of each tree
+max_depth=3           # depth of each weak tree
+min_samples_leaf=10   # minimum leaf size
+subsample=1.0         # fraction of rows per tree
+loss="huber"          # optimized objective
