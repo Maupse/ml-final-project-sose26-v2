@@ -1,6 +1,6 @@
 # ML Final Project
 
-Small PyTorch training setup for Airbnb price experiments.
+Airbnb price-regression experiments with PyTorch MLPs, scikit-learn tree models, shared preprocessing, and artifact-backed notebooks.
 
 ## Install
 
@@ -16,7 +16,7 @@ uv run python -m pytest
 
 ## Configs
 
-Single-run configs live in `configs/single/`. Use scalar training values:
+Single-run configs in `configs/single/` use scalar values and produce one fitted model. They are used for MLP training and for the final tree evaluation after hyperparameter selection:
 
 ```toml
 [experiment]
@@ -44,7 +44,7 @@ lr = 0.001
 batch_size = 64
 ```
 
-Multi-run configs live in `configs/multiple/`. Use lists for training values; the pipeline runs every combination:
+MLP multi-run configs in `configs/multiple/` use lists for training values; the corresponding pipeline runs every combination:
 
 ```toml
 [training]
@@ -56,11 +56,34 @@ lr = [0.001, 0.01]
 batch_size = [32, 64, 128]
 ```
 
+Tree search configs also live in `configs/multiple/`, but their lists describe parameter distributions for `RandomizedSearchCV`. Set `data_split.k` for the number of folds (default: 5) and use `[search]` for search settings:
+
+```toml
+[data_split]
+train = 0.8
+test = 0.2
+k = 5
+
+[training]
+model = "random-forest"
+n_estimators = [200, 500]
+max_depth = [-1, 10, 20]
+max_features = ["sqrt", 0.5]
+
+[search]
+n_iter = 30
+n_jobs = -1
+```
+
+Supported tree models are `random-forest` and `boosted-tree`. Tree search artifacts record the selected parameters in `best_params.json`; copy these into the matching single config before a final full-train/test run.
+
 ## Run Pipelines
 
 ```bash
 uv run python src/team_project/pipelines/train-val-mlp-single.py --config configs/single/mlp-v1.toml
 uv run python src/team_project/pipelines/train-val-mlp-multiple.py --config configs/multiple/mlp-v1-batch-sizes.toml
+uv run python src/team_project/pipelines/cross-val-tree-multiple.py --config configs/multiple/random-forest-v1.toml
+uv run python src/team_project/pipelines/full-train-test-tree.py --config configs/single/random-forest-v1.toml
 ```
 
 Outputs are written to:
@@ -68,9 +91,11 @@ Outputs are written to:
 ```text
 artifacts/single/<experiment-name>/single_validation_set/
 artifacts/multiple/<experiment-name>/single_validation_set/run_*/
+artifacts/multiple/<experiment-name>/cross_validation/best_params.json
+artifacts/single/<experiment-name>/final/metrics.json
 ```
 
-Each run contains `history.json` and `metadata.json`.
+MLP runs contain `history.json` and `metadata.json`. Tree searches contain `metadata.json` and `best_params.json`; final tree runs contain `metadata.json` and `metrics.json`.
 
 ## Read Results In A Notebook
 
@@ -103,6 +128,7 @@ plt.show()
 - [x] Add tqdm logging to training loops
 - [x] Add train multiple configs and artifacts to be able to test many hyperparameters
 - [x] Add linear and mean baseline comparison
-- [ ] Work on the expanded feature set, the training data is the current bottleneck
+- [x] Add the expanded structural feature set and rerun the model comparison
 - [x] Add cross validation to have more stability in testing hyperparameters
-- [ ] Make pipelines for random forests and boosted trees
+- [x] Add random-forest and boosted-tree search and final-evaluation pipelines
+- [ ] Evaluate additional feature sets and tune the strongest models further
