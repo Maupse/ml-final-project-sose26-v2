@@ -131,4 +131,4 @@ plt.show()
 - [x] Add the expanded structural feature set and rerun the model comparison
 - [x] Add cross validation to have more stability in testing hyperparameters
 - [x] Add random-forest and boosted-tree search and final-evaluation pipelines
-- [ ] Evaluate additional feature sets and tune the strongest models further
+~~- [ ] Evaluate additional feature sets and tune the strongest models further~~ (not in time budget)
