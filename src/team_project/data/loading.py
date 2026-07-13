@@ -73,6 +73,38 @@ def load_final_metrics(experiment_name):
     return metrics
 
 
+def load_tree_best_params(experiment_name):
+    """Load the best parameters selected by a tree-model search."""
+    file_path = Path(
+        PROJECT_ROOT
+        / "artifacts"
+        / "multiple"
+        / experiment_name
+        / "cross_validation"
+        / "best_params.json"
+    )
+    if not file_path.is_file():
+        raise FileNotFoundError("The artifact might have not been created yet")
+    with open(file_path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def load_tree_search_metadata(experiment_name):
+    """Load metadata produced by a tree-model randomized search."""
+    file_path = Path(
+        PROJECT_ROOT
+        / "artifacts"
+        / "multiple"
+        / experiment_name
+        / "cross_validation"
+        / "metadata.json"
+    )
+    if not file_path.is_file():
+        raise FileNotFoundError("The artifact might have not been created yet")
+    with open(file_path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
 def load_final_mean_baseline(experiment_name):
     path = Path(PROJECT_ROOT / "artifacts" / "single" / experiment_name / "final" / "baselines")
     file_path = path / "mean_metrics.json"
@@ -111,19 +143,19 @@ def load_data_single_run_cross_validation(experiment_name) -> dict[str, dict[str
 
 def load_data_multi_run(experiment_name) -> list[dict[str, dict[str, list[float]]]]:
     parent = Path(PROJECT_ROOT / "artifacts" / "multiple" / experiment_name / "single_validation_set")
-    l = []
+    runs = []
     for child in sorted(parent.iterdir()):
         if child.is_dir():
-            l.append(load_data(child))
+            runs.append(load_data(child))
 
-    return l
+    return runs
 
 
 def load_data_multi_run_cross_validation(experiment_name) -> list[dict[str, dict[str, list[float]]]]:
     parent = Path(PROJECT_ROOT / "artifacts" / "multiple" / experiment_name / "cross_validation")
-    l = []
+    runs = []
     for child in sorted(parent.iterdir()):
         if child.is_dir():
-            l.append(load_data(child))
+            runs.append(load_data(child))
 
-    return l
+    return runs

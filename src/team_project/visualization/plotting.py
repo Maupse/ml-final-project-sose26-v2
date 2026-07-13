@@ -2,6 +2,99 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
+
+def configure_notebook_style() -> None:
+    """Apply the project's shared notebook plotting style."""
+    plt.rcParams["figure.dpi"] = 120
+    sns.set_theme(
+        style="ticks",
+        font="sans-serif",
+        rc={
+            "axes.spines.top": False,
+            "axes.spines.right": False,
+            "xtick.bottom": True,
+            "ytick.left": True,
+            "xtick.major.size": 5,
+            "ytick.major.size": 5,
+            "xtick.major.width": 1,
+            "ytick.major.width": 1,
+            "xtick.direction": "out",
+            "ytick.direction": "out",
+        },
+    )
+
+
+def plot_cv_rmse_comparison(cv_summary: pd.DataFrame) -> None:
+    """Plot cross-validated RMSE for a model comparison table."""
+    plt.figure(figsize=(8, 5))
+    sns.barplot(
+        data=cv_summary.sort_values("cv_rmse"),
+        x="model",
+        y="cv_rmse",
+        hue="model",
+        palette="colorblind",
+        legend=False,
+    )
+    plt.title("Cross-Validated Log-Price RMSE")
+    plt.xlabel("Model")
+    plt.ylabel("RMSE on log1_price")
+    plt.xticks(rotation=20, ha="right")
+    sns.despine()
+    plt.show()
+
+
+def plot_test_error_comparison(
+    test_performance: pd.DataFrame,
+    *,
+    figsize: tuple[int, int] = (9, 5),
+) -> None:
+    """Plot held-out RMSE and MAE for a model comparison table."""
+    test_error_metrics = test_performance.melt(
+        id_vars="model",
+        value_vars=["rmse", "mae"],
+        var_name="metric",
+        value_name="value",
+    )
+
+    plt.figure(figsize=figsize)
+    sns.barplot(
+        data=test_error_metrics,
+        x="metric",
+        y="value",
+        hue="model",
+        palette="colorblind",
+    )
+    plt.title("Held-Out Test RMSE and MAE on Log Price")
+    plt.xlabel("Metric")
+    plt.ylabel("Log-price error")
+    plt.legend(title="Model")
+    sns.despine()
+    plt.show()
+
+
+def plot_test_r2_comparison(
+    test_performance: pd.DataFrame,
+    *,
+    figsize: tuple[int, int] = (8, 4),
+) -> None:
+    """Plot held-out R2 for a model comparison table."""
+    plt.figure(figsize=figsize)
+    sns.barplot(
+        data=test_performance.sort_values("r2", ascending=False),
+        x="model",
+        y="r2",
+        hue="model",
+        palette="colorblind",
+        legend=False,
+    )
+    plt.axhline(0, color="black", linewidth=1)
+    plt.title("Held-Out Test R2 on Log Price")
+    plt.xlabel("Model")
+    plt.ylabel("R2")
+    plt.xticks(rotation=20, ha="right")
+    sns.despine()
+    plt.show()
+
 def plot_hyperparameter_runs(
     runs: list[dict],
     hyperparameter_key: str,
